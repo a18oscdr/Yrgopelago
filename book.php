@@ -25,8 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  * @return bool Returns true if the room is available, false otherwise.
  */
 function checkRoomAvailability($room, $arrivalDate, $departureDate) {
+    // Connect to the database
+    $db = new mysqli("localhost", "username", "password", "database");
 
-    return true;
+    // Check if the room is available
+    $query = "SELECT * FROM bookings WHERE room_id = '$room' AND arrival_date <= '$departureDate' AND departure_date >= '$arrivalDate'";
+    $result = $db->query($query);
+
+    // If there are any bookings that overlap with the given date range, return false
+    if ($result->num_rows > 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 /**
