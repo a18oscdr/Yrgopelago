@@ -35,4 +35,23 @@ function displayBookings($arrivalDate, $departureDate) {
         echo "No bookings found for the given date range.\n";
     }
 }
+function displayCalendar($year, $month) {
+    // Get the number of days in the month
+    $daysInMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+
+    // Get the day of the week for the first day of the month
+    $dayOfWeek = date('w', mktime(0, 0, 0, $month, 1, $year));
+
+    // Display the calendar
+    echo "  Su Mo Tu We Th Fr Sa\n";
+    for ($i = 0; $i < $dayOfWeek; $i++) {
+        echo "   ";
+    }
+    for ($day = 1; $day <= $daysInMonth; $day++) {
+        echo sprintf("%2d ", $day);
+        if (($day + $dayOfWeek - 1) % 7 == 0) {
+            echo "\n";
+        }
+    }
+}
 ?>
