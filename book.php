@@ -63,5 +63,55 @@ function bookRoom($room, $arrivalDate, $departureDate, $amenities) {
         $query = "INSERT INTO amenities (booking_id, amenity) VALUES (LAST_INSERT_ID(), '$amenity')";
         $db->query($query);
     }
+        // Generate the JSON response
+        $response = array(
+            "island" => "Main island",
+            "hotel" => "Centralhotellet",
+            "arrival_date" => $arrivalDate,
+            "departure_date" => $departureDate,
+            "total_cost" => calculateTotalCost($room, $arrivalDate, $departureDate, $amenities),
+            "stars" => 3,
+            "features" => array(
+                array("name" => "sauna", "cost" => 2)
+            ),
+            "additional_info" => array(
+                "greeting" => "Thank you for choosing Centralhotellet",
+                "imageUrl" => "https://upload.wikimedia.org/wikipedia/commons/e/e2/Hotel_Boscolo_Exedra_Nice.jpg"
+            )
+        );
+    
+        // Send the JSON response back to the user
+        header('Content-Type: application/json');
+        echo json_encode($response);
+
+        function calculateTotalCost($room, $arrivalDate, $departureDate, $amenities) {
+            // Connect to the database
+            $db = new mysqli("localhost", "your_username", "your_password", "your_database_name");
+        
+            // Calculate the number of nights
+            $arrivalTimestamp = strtotime($arrivalDate);
+            $departureTimestamp = strtotime($departureDate);
+            $nights = ceil(($departureTimestamp - $arrivalTimestamp) / (60 * 60 * 24));
+        
+            // Get the room price from the database
+            $query = "SELECT price FROM rooms WHERE room_id = '$room'";
+            $result = $db->query($query);
+            $row = $result->fetch_assoc();
+            $roomPrice = $row['price'];
+        
+            // Calculate the total cost
+            $totalCost = $roomPrice * $nights;
+        
+            // Add the cost of the selected amenities
+            foreach ($amenities as $amenity) {
+                $query = "SELECT cost FROM amenities WHERE amenity = '$amenity'";
+                $result = $db->query($query);
+                $row = $result->fetch_assoc();
+                $amenityCost = $row['cost'];
+                $totalCost += $amenityCost;
+            }
+        
+            return $totalCost;
+    }
 }
 ?>
