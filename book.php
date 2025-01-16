@@ -49,7 +49,11 @@ function checkRoomAvailability($room, $arrivalDate, $departureDate) {
  * @return void
  */
 function bookRoom($room, $arrivalDate, $departureDate) {
+    // Connect to the database
+    $db = new mysqli("localhost", "username", "password", "database");
 
-    echo "Room $room booked for $arrivalDate to $departureDate";
+    // Insert a new booking into the database
+    $query = "INSERT INTO bookings (room_id, arrival_date, departure_date) VALUES ('$room', '$arrivalDate', '$departureDate')";
+    $db->query($query);
 }
 ?>
